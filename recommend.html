@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recoverse — Recommend</title>
+<style>
+    body {
+        margin: 0;
+        font-family: "Poppins", sans-serif;
+        background: #0d0d0d;
+        color: white;
+    }
+
+    header {
+        background: #111;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #ff0066;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #1a1a1a;
+        padding: 25px;
+        border-radius: 10px;
+        border: 1px solid #333;
+        box-shadow: 0 0 15px rgba(255,0,102,0.2);
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #ff0066;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        margin-bottom: 18px;
+        background: #2a2a2a;
+        color: white;
+        font-size: 15px;
+    }
+
+    textarea {
+        height: 120px;
+        resize: vertical;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        background: #ff0066;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #ff3385;
+    }
+
+    .success-msg {
+        background: #112;
+        padding: 15px;
+        border-left: 4px solid #0f0;
+        margin-top: 15px;
+        display: none;
+    }
+</style>
+</head>
+
+<body>
+
+<header>Recoverse — Submit a Recommendation</header>
+
+<div class="container">
+    <h2>Share Your Recommendation</h2>
+
+    <label>Title</label>
+    <input type="text" id="title" placeholder="Enter title (Anime, Movie, Game…)">
+
+    <label>Category</label>
+    <select id="category">
+        <option value="">Select a category</option>
+        <option>Anime</option>
+        <option>Manga</option>
+        <option>Manhwa</option>
+        <option>Manhua</option>
+        <option>Movie</option>
+        <option>Game</option>
+    </select>
+
+    <label>Why do you recommend it?</label>
+    <textarea id="reason" placeholder="Describe why others should try it..."></textarea>
+
+    <label>Image URL (Poster / Cover)</label>
+    <input type="text" id="image" placeholder="Paste image link">
+
+    <label>Your Nickname</label>
+    <input type="text" id="nickname" placeholder="Enter nickname">
+
+    <button onclick="submitForm()">Submit</button>
+
+    <div class="success-msg" id="success">Your recommendation has been submitted! 🎉</div>
+</div>
+
+<script>
+function submitForm() {
+    let title = document.getElementById("title").value;
+    let category = document.getElementById("category").value;
+    let reason = document.getElementById("reason").value;
+    let image = document.getElementById("image").value;
+    let nickname = document.getElementById("nickname").value;
+
+    if (!title || !category || !reason || !nickname) {
+        alert("Please fill all required fields!");
+        return;
+    }
+
+    // For now: Show success message and clear form
+    document.getElementById("success").style.display = "block";
+
+    // Later we will send this data to Google Sheets or a database
+    console.log({
+        title, category, reason, image, nickname
+    });
+
+    document.getElementById("title").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("reason").value = "";
+    document.getElementById("image").value = "";
+    document.getElementById("nickname").value = "";
+}
+</script>
+
+</body>
+</html>
