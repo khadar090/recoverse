@@ -11,12 +11,17 @@
   nav a { margin-left:15px; color:#fff; font-weight:600; text-decoration:none; }
   nav a:hover { color:#ff66a3; }
   main { max-width:1000px; margin:50px auto; padding:0 20px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; }
-  .rec-card { background:#111; border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,0.05); overflow:hidden; }
-  .rec-card img { width:100%; height:160px; object-fit:cover; border-radius:10px; margin-bottom:10px; }
-  .rec-title { font-weight:700; font-size:16px; margin-bottom:4px; }
-  .rec-desc { color:#bbb; font-size:13px; margin-bottom:6px; }
-  .rec-meta { display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#888; }
+  .recommendation { background:#111; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.05); display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .recommendation img { width:200px; height:120px; object-fit:cover; border-radius:10px; cursor:pointer; }
+  .recommendation .content { flex:1; min-width:200px; }
+  .recommendation h2 { margin:0 0 6px; font-size:18px; color:#ff66a3; }
+  .recommendation p { font-size:13px; margin:4px 0; color:#bbb; }
+  .rec-meta { display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+  .rec-score { font-weight:800; color:#ff66a3; }
+  .rec-category { font-size:12px; color:#999; }
+  #popup { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:1000; }
+  #popup img { max-width:90%; max-height:90%; border-radius:12px; }
+  #popup span { position:absolute; top:20px; right:30px; font-size:36px; color:#fff; cursor:pointer; }
   footer { text-align:center; padding:25px; background:#111; color:#999; border-top:2px solid #ff0066; margin-top:50px; }
 </style>
 </head>
@@ -37,41 +42,60 @@
 
 <main>
   <h2>Anime Recommendations</h2>
-  <div class="grid" id="anime-grid">
-    <!-- Anime cards will be inserted here -->
-  </div>
+  <div id="recommendations"></div>
 </main>
+
+<!-- Image Popup -->
+<div id="popup">
+  <span onclick="this.parentElement.style.display='none'">&times;</span>
+  <img src="" alt="Preview">
+</div>
 
 <footer>© 2025 Recoverse — All Rights Reserved.</footer>
 
 <script>
-  const url = "https://script.google.com/macros/s/AKfycbyaoiwwJI62OtbTzG9bwNjwTUShgs3sQrDRLR7Kx_QonT2Mp2xJMIZNrtYeg-KZSQbezg/exec";
-  const grid = document.getElementById('anime-grid');
+  const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRV5P_n0dpkA3c5vdugffszd7a-uzC7pVesxuhdt9dpoLj8Ek9LGkSbbRrp0Sh6TEwbJAQeAusxCB2a/pub?output=csv';
+  const recommendationsData = [];
+  const container = document.getElementById('recommendations');
 
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      // Filter only Anime category
-      const animeItems = data.filter(item => item.category.toLowerCase() === 'anime');
+  function openPopup(src) {
+    const popup = document.getElementById('popup');
+    popup.querySelector('img').src = src;
+    popup.style.display = 'flex';
+  }
 
-      animeItems.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'rec-card';
-        card.innerHTML = `
-          <img src="${item.image || 'https://via.placeholder.com/400x160?text=No+Image'}" alt="${item.title}">
-          <div class="rec-title">${item.title}</div>
-          <div class="rec-desc">${item.desc}</div>
-          <div class="rec-meta">
-            <span>${item.nickname}</span>
-            <span>${item.score}</span>
+  function renderRecommendations() {
+    container.innerHTML = '';
+    recommendationsData.forEach(({ title, reason, image, score, category, links }) => {
+      const html = `
+        <div class="recommendation">
+          <img src="${image}" alt="${title}" onclick="openPopup(this.src)" onerror="this.style.display='none'">
+          <div class="content">
+            <h2>${title}</h2>
+            <p>${reason}</p>
+            <div class="rec-meta">
+              <div class="rec-score">${score}</div>
+              <div class="rec-category">${category}</div>
+            </div>
+            ${links ? `<p><a href="${links}" target="_blank">More info</a></p>` : ''}
           </div>
-        `;
-        grid.appendChild(card);
+        </div>
+      `;
+      container.innerHTML += html;
+    });
+  }
+
+  fetch(sheetUrl)
+    .then(res => res.text())
+    .then(csv => {
+      const rows = csv.trim().split('\n').slice(1).reverse();
+      rows.forEach(row => {
+        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+                        .map(col => col.replace(/^"|"$/g, '').replace(/""/g, '"'));
+        const [ , , , title, reason, image, score, category, links ] = cols;
+        recommendationsData.push({ title, reason, image, score, category, links });
       });
-    })
-    .catch(err => {
-      console.error("Error fetching data:", err);
-      grid.innerHTML = "<p style='color:#f66'>Failed to load recommendations.</p>";
+      renderRecommendations();
     });
 </script>
 
