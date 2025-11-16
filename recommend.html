@@ -5,30 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recoverse — Recommend</title>
 <style>
-body {
+  body {
     margin:0;
     font-family:"Poppins", sans-serif;
     background:#0b0b0b;
     color:#fff;
-}
-header {
+  }
+  header {
     background:#111;
     padding:20px;
     display:flex;
     justify-content:space-between;
     align-items:center;
     border-bottom:2px solid #ff0066;
-}
-header h1 { color:#ff0066; margin:0; }
-nav a { margin-left:15px; color:#fff; font-weight:600; text-decoration:none;}
-nav a:hover { color:#ff66a3; }
-main { max-width:600px; margin:40px auto; padding:0 20px;}
-form { display:flex; flex-direction:column; gap:15px; }
-input, select, textarea, button { padding:12px; border-radius:6px; border:none; font-size:15px;}
-input, select, textarea { background:#222; color:#fff; resize:none;}
-button { background:#ff0066; color:#fff; cursor:pointer; font-weight:700; transition:.2s;}
-button:hover { background:#ff3385; }
-footer { text-align:center; padding:25px; background:#111; color:#999; border-top:2px solid #ff0066; margin-top:50px; }
+  }
+  header h1 { color:#ff0066; margin:0; font-size:22px;}
+  nav a { margin-left:15px; color:#fff; font-weight:600; text-decoration:none;}
+  nav a:hover { color:#ff66a3; }
+  main {
+    max-width:700px;
+    margin:50px auto;
+    padding:0 20px;
+    text-align:center;
+  }
+  .tally-embed-wrapper {
+    margin-top:30px;
+    border:1px solid #333;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 8px 20px rgba(255,0,102,0.2);
+  }
+  footer {
+    text-align:center;
+    padding:25px;
+    background:#111;
+    color:#999;
+    border-top:2px solid #ff0066;
+    margin-top:50px;
+  }
 </style>
 </head>
 <body>
@@ -47,54 +61,25 @@ footer { text-align:center; padding:25px; background:#111; color:#999; border-to
 </header>
 
 <main>
-    <form id="recForm">
-        <select name="category" required>
-            <option value="">Select Category</option>
-            <option>Anime</option>
-            <option>Manga</option>
-            <option>Manhwa</option>
-            <option>Manhua</option>
-            <option>Movies</option>
-            <option>Games</option>
-        </select>
-        <input name="title" placeholder="Title" required>
-        <textarea name="desc" placeholder="Description" rows="4" required></textarea>
-        <input name="score" type="number" min="0" max="10" placeholder="Score (0-10)">
-        <input name="nickname" placeholder="Your nickname">
-        <button type="submit">Submit Recommendation</button>
-    </form>
+  <h2>Submit Your Recommendation</h2>
+  <p>Use the form below to recommend Anime, Manga, Movies, or Games. You can upload images too!</p>
+
+  <!-- Tally Form Embed -->
+  <div class="tally-embed-wrapper" id="tallyForm"></div>
 </main>
 
 <footer>© 2025 Recoverse — All Rights Reserved.</footer>
 
+<!-- Tally Embed Script -->
+<script src="https://tally.so/widgets/embed.js"></script>
 <script>
-const form = document.getElementById('recForm');
-form.addEventListener('submit', async e => {
-    e.preventDefault();
-    const data = {
-        category: form.category.value,
-        title: form.title.value,
-        desc: form.desc.value,
-        score: form.score.value,
-        nickname: form.nickname.value
-    };
-    const url = "https://script.google.com/macros/s/AKfycbw6jOLt6wkt9QyCJrJc8FcpS2MW5v_Go8oPgaXXu-4Y1AfPuLaDRT4NrwZZvjNZgeo6-w/exec"; // replace with Google Apps Script Web App URL
-
-    try {
-        const res = await fetch(url, {
-            method: "POST",
-            body: JSON.stringify(data)
-        });
-        const result = await res.json();
-        if(result.status==="success"){
-            alert("Recommendation submitted!");
-            form.reset();
-        } else alert("Submission failed. Try again.");
-    } catch(err){
-        alert("Error connecting to server.");
-        console.error(err);
-    }
-});
+  new TallyEmbed({ 
+    container: "#tallyForm",
+    url: "https://tally.so/r/vGGPzl",  // Replace with your Tally form URL
+    hideTitle: false,
+    hideFooter: false,
+    height: 800
+  });
 </script>
 
 </body>
